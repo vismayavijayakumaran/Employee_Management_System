@@ -42,8 +42,7 @@ public class EmployeeService {
         employeeRepository.deleteById(id);
     }
 
-    public Page<Employee> getAllEmployees(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public Page<Employee> getAllEmployees( Pageable pageable) {
         return employeeRepository.findAll(pageable);
     }
 }

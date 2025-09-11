@@ -29,7 +29,6 @@ public class DepartmentService {
                 .orElseThrow(() -> new RuntimeException("Department not found"));
         department.setName(departmentDetails.getName());
         department.setDepartmentHead(departmentDetails.getDepartmentHead());
-        department.setCreationDate(departmentDetails.getCreationDate());
         return departmentRepository.save(department);
     }
 
@@ -37,8 +36,7 @@ public class DepartmentService {
         departmentRepository.deleteById(id);
     }
 
-    public Page<Department> getAllDepartments(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public Page<Department> getAllDepartments( Pageable pageable) {
         return departmentRepository.findAll(pageable);
     }
 }

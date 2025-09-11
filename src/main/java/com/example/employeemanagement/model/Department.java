@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -27,6 +29,8 @@ public class Department {
     @Column(nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT now()")
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    private String departmentHead;
+    @OneToOne
+    @JoinColumn(name = "head_id")
+    private Employee departmentHead;
 
 }

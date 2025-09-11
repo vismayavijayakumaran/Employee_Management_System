@@ -5,6 +5,8 @@ import com.example.employeemanagement.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +33,9 @@ public class DepartmentController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Department>> getAllDepartments(Pageable pageable) {
+    public ResponseEntity<Page<Department>> getAllDepartments(
+        @PageableDefault(page = 0, size = 20, sort = {"createdAt"}, direction = Direction.DESC) Pageable pageable
+    ) {
         Page<Department> departments = departmentService.getAllDepartments(pageable);
         return ResponseEntity.ok(departments);
     }
