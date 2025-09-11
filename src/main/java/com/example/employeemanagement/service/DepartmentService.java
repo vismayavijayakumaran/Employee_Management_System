@@ -2,6 +2,7 @@ package com.example.employeemanagement.service;
 
 import com.example.employeemanagement.model.Department;
 import com.example.employeemanagement.repository.DepartmentRepository;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,11 +21,11 @@ public class DepartmentService {
         return departmentRepository.save(department);
     }
 
-    public Optional<Department> getDepartmentById(Long id) {
+    public Optional<Department> getDepartmentById(UUID id) {
         return departmentRepository.findById(id);
     }
 
-    public Department updateDepartment(Long id, Department departmentDetails) {
+    public Department updateDepartment(UUID id, Department departmentDetails) {
         Department department = departmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Department not found"));
         department.setName(departmentDetails.getName());
@@ -32,7 +33,7 @@ public class DepartmentService {
         return departmentRepository.save(department);
     }
 
-    public void deleteDepartment(Long id) {
+    public void deleteDepartment(UUID id) {
         departmentRepository.deleteById(id);
     }
 

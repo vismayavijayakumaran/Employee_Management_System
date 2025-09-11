@@ -2,6 +2,7 @@ package com.example.employeemanagement.controller;
 
 import com.example.employeemanagement.model.Department;
 import com.example.employeemanagement.service.DepartmentService;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +28,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Department> getDepartmentById(@PathVariable Long id) {
+    public ResponseEntity<Department> getDepartmentById(@PathVariable UUID id) {
         Optional<Department> department = departmentService.getDepartmentById(id);
         return department.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -41,13 +42,13 @@ public class DepartmentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Department> updateDepartment(@PathVariable Long id, @RequestBody Department department) {
+    public ResponseEntity<Department> updateDepartment(@PathVariable UUID id, @RequestBody Department department) {
         Department updatedDepartment = departmentService.updateDepartment(id, department);
         return ResponseEntity.ok(updatedDepartment);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDepartment(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteDepartment(@PathVariable UUID id) {
         departmentService.deleteDepartment(id);
         return ResponseEntity.noContent().build();
     }

@@ -2,6 +2,7 @@ package com.example.employeemanagement.service;
 
 import com.example.employeemanagement.model.Employee;
 import com.example.employeemanagement.repository.EmployeeRepository;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,11 +21,11 @@ public class EmployeeService {
         return employeeRepository.save(employee);
     }
 
-    public Optional<Employee> getEmployeeById(Long id) {
+    public Optional<Employee> getEmployeeById(UUID id) {
         return employeeRepository.findById(id);
     }
 
-    public Employee updateEmployee(Long id, Employee employeeDetails) {
+    public Employee updateEmployee(UUID id, Employee employeeDetails) {
         Employee employee = employeeRepository.findById(id).orElseThrow(() -> new RuntimeException("Employee not found"));
         employee.setName(employeeDetails.getName());
         employee.setDateOfBirth(employeeDetails.getDateOfBirth());
@@ -38,7 +39,7 @@ public class EmployeeService {
         return employeeRepository.save(employee);
     }
 
-    public void deleteEmployee(Long id) {
+    public void deleteEmployee(UUID id) {
         employeeRepository.deleteById(id);
     }
 

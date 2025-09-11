@@ -1,9 +1,12 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/employee_management
-    username: postgres
-    password: password
+      url: ${PSQL_URL}
+      username: ${PSQL_USERNAME}
+      password: ${PSQL_PASSWORD}
+      driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+server:
+  port: 8085
