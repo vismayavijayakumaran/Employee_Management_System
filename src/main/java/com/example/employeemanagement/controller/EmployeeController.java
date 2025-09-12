@@ -26,12 +26,6 @@ public class EmployeeController {
         return new ResponseEntity<>(createdEmployee, HttpStatus.CREATED);
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<Employee> getEmployeeById(@PathVariable UUID id) {
-//        Optional<Employee> employee = employeeService.getEmployeeById(id);
-//        return employee.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-//    }
-
     @GetMapping
     public ResponseEntity<Page<EmployeeResponse>> getAllEmployees(
         @PageableDefault(page = 0, size = 20, sort = {"createdAt"}, direction = Direction.DESC) Pageable pageable) {

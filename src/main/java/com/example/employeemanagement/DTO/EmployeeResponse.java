@@ -1,11 +1,12 @@
 package com.example.employeemanagement.DTO;
 
-import com.example.employeemanagement.Entity.Department;
-import com.example.employeemanagement.Entity.Employee;
-
 import java.time.LocalDate;
 import java.util.UUID;
+import lombok.*;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class EmployeeResponse {
 
     private UUID id;
@@ -24,7 +25,9 @@ public class EmployeeResponse {
 
     private Double yearlyBonusPercentage;
 
-    private String department;
+    private UUID departmentID;
 
-    private String reportingManager;
+    private String departmenName;
+
+    private String reportingManagerName;
 }
