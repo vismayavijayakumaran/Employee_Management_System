@@ -1,6 +1,6 @@
 package com.example.employeemanagement.repository;
 
-import com.example.employeemanagement.model.Department;
+import com.example.employeemanagement.Entity.Department;
 
 import java.util.UUID;
 

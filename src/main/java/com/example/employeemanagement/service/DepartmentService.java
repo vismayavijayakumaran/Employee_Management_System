@@ -1,15 +1,12 @@
 package com.example.employeemanagement.service;
 
-import com.example.employeemanagement.model.Department;
+import com.example.employeemanagement.Entity.Department;
 import com.example.employeemanagement.repository.DepartmentRepository;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class DepartmentService {
@@ -21,9 +18,9 @@ public class DepartmentService {
         return departmentRepository.save(department);
     }
 
-    public Optional<Department> getDepartmentById(UUID id) {
-        return departmentRepository.findById(id);
-    }
+//    public Optional<Department> getDepartmentById(UUID id) {
+//        return departmentRepository.findById(id);
+//    }
 
     public Department updateDepartment(UUID id, Department departmentDetails) {
         Department department = departmentRepository.findById(id)

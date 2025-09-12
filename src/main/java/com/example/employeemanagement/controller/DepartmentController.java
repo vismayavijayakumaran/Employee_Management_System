@@ -1,6 +1,6 @@
 package com.example.employeemanagement.controller;
 
-import com.example.employeemanagement.model.Department;
+import com.example.employeemanagement.Entity.Department;
 import com.example.employeemanagement.service.DepartmentService;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +11,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/departments")
@@ -27,11 +25,11 @@ public class DepartmentController {
         return new ResponseEntity<>(createdDepartment, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Department> getDepartmentById(@PathVariable UUID id) {
-        Optional<Department> department = departmentService.getDepartmentById(id);
-        return department.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
+//    @GetMapping("/{id}")
+//    public ResponseEntity<Department> getDepartmentById(@PathVariable UUID id) {
+//        Optional<Department> department = departmentService.getDepartmentById(id);
+//        return department.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+//    }
 
     @GetMapping
     public ResponseEntity<Page<Department>> getAllDepartments(

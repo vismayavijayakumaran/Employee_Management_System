@@ -1,15 +1,13 @@
 package com.example.employeemanagement.service;
 
-import com.example.employeemanagement.model.Employee;
+import com.example.employeemanagement.DTO.EmployeeResponse;
+import com.example.employeemanagement.Entity.Employee;
 import com.example.employeemanagement.repository.EmployeeRepository;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class EmployeeService {
@@ -21,9 +19,9 @@ public class EmployeeService {
         return employeeRepository.save(employee);
     }
 
-    public Optional<Employee> getEmployeeById(UUID id) {
-        return employeeRepository.findById(id);
-    }
+//    public Optional<Employee> getEmployeeById(UUID id) {
+//        return employeeRepository.findById(id);
+//    }
 
     public Employee updateEmployee(UUID id, Employee employeeDetails) {
         Employee employee = employeeRepository.findById(id).orElseThrow(() -> new RuntimeException("Employee not found"));
@@ -43,7 +41,7 @@ public class EmployeeService {
         employeeRepository.deleteById(id);
     }
 
-    public Page<Employee> getAllEmployees( Pageable pageable) {
+    public Page<EmployeeResponse> getAllEmployees(Pageable pageable) {
         return employeeRepository.findAll(pageable);
     }
 }

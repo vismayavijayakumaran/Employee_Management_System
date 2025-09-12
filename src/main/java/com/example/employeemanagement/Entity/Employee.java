@@ -1,4 +1,4 @@
-package com.example.employeemanagement.model;
+package com.example.employeemanagement.Entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -50,5 +50,6 @@ public class Employee {
 
     @Column(nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT now()")
     private LocalDateTime createdAt = LocalDateTime.now();
+
 
 }
