@@ -8,6 +8,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -46,4 +47,8 @@ public class Employee {
     @ManyToOne
     @JoinColumn(name = "manager_id")
     private Employee reportingManager;
+
+    @Column(nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT now()")
+    private LocalDateTime createdAt = LocalDateTime.now();
+
 }
