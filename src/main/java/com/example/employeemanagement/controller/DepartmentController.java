@@ -25,12 +25,6 @@ public class DepartmentController {
         return new ResponseEntity<>(createdDepartment, HttpStatus.CREATED);
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<Department> getDepartmentById(@PathVariable UUID id) {
-//        Optional<Department> department = departmentService.getDepartmentById(id);
-//        return department.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-//    }
-
     @GetMapping
     public ResponseEntity<Page<Department>> getAllDepartments(
         @PageableDefault(page = 0, size = 20, sort = {"createdAt"}, direction = Direction.DESC) Pageable pageable

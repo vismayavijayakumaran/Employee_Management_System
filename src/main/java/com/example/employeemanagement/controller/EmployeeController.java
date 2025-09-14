@@ -1,5 +1,6 @@
 package com.example.employeemanagement.controller;
 
+import com.example.employeemanagement.DTO.EmployeeRequest;
 import com.example.employeemanagement.DTO.EmployeeResponse;
 import com.example.employeemanagement.Entity.Employee;
 import com.example.employeemanagement.service.EmployeeService;
@@ -21,8 +22,8 @@ public class EmployeeController {
     private EmployeeService employeeService;
 
     @PostMapping
-    public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
-        Employee createdEmployee = employeeService.createEmployee(employee);
+    public ResponseEntity<EmployeeResponse> createEmployee(@RequestBody Employee employee) {
+        EmployeeResponse createdEmployee = employeeService.createEmployee(employee);
         return new ResponseEntity<>(createdEmployee, HttpStatus.CREATED);
     }
 
@@ -34,8 +35,8 @@ public class EmployeeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Employee> updateEmployee(@PathVariable UUID id, @RequestBody Employee employee) {
-        Employee updatedEmployee = employeeService.updateEmployee(id, employee);
+    public ResponseEntity<EmployeeResponse> updateEmployee(@PathVariable UUID id, @RequestBody EmployeeRequest employee) {
+        EmployeeResponse updatedEmployee = employeeService.updateEmployee(id, employee);
         return ResponseEntity.ok(updatedEmployee);
     }
 

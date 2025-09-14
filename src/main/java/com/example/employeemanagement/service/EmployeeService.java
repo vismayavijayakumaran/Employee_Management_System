@@ -1,7 +1,11 @@
 package com.example.employeemanagement.service;
 
+import com.example.employeemanagement.DTO.EmployeeRequest;
 import com.example.employeemanagement.DTO.EmployeeResponse;
+import com.example.employeemanagement.Entity.Department;
 import com.example.employeemanagement.Entity.Employee;
+import com.example.employeemanagement.exception.EmployeeException;
+import com.example.employeemanagement.repository.DepartmentRepository;
 import com.example.employeemanagement.repository.EmployeeRepository;
 import java.util.UUID;
 import java.util.Optional;
@@ -17,15 +21,31 @@ public class EmployeeService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+    @Autowired
+    private DepartmentRepository departmentRepository;
 
-    public Employee createEmployee(Employee employee) {
+    public EmployeeResponse createEmployee(Employee employee) {
         try {
             if (employee == null) {
                 log.error("Attempted to create a null employee");
                 throw new IllegalArgumentException("Employee object cannot be null");
             }
-            log.info("Creating employee: {}", employee.getName());
-            return employeeRepository.save(employee);
+            // Check department
+            if (employee.getDepartment() == null || employee.getDepartment().getId() == null ||
+                !departmentRepository.existsById(employee.getDepartment().getId())) {
+                log.error("Invalid or missing department for employee");
+                throw new EmployeeException("Department not found");
+            }
+            // Check reporting manager (if provided)
+            if (employee.getReportingManager() != null && employee.getReportingManager().getId() != null) {
+                if (!employeeRepository.existsById(employee.getReportingManager().getId())) {
+                    log.error("Reporting manager not found with ID: {}", employee.getReportingManager().getId());
+                    throw new EmployeeException("Reporting manager not found");
+                }
+            }
+            log.info("Creating employee: {}", employee.getFirstname());
+            Employee savedEmployee = employeeRepository.save(employee);
+            return savedEmployee.toDto();
         } catch (Exception e) {
             log.error("Error creating employee: {}", e.getMessage());
             throw new RuntimeException("Failed to create employee", e);
@@ -46,7 +66,7 @@ public class EmployeeService {
         }
     }
 
-    public Employee updateEmployee(UUID id, Employee employeeDetails) {
+    public EmployeeResponse updateEmployee(UUID id, EmployeeRequest employeeDetails) {
         try {
             if (id == null || employeeDetails == null) {
                 log.error("Invalid input for updating employee");
@@ -58,16 +78,37 @@ public class EmployeeService {
                         return new RuntimeException("Employee not found");
                     });
             log.info("Updating employee with ID: {}", id);
-            employee.setName(employeeDetails.getName());
-            employee.setDateOfBirth(employeeDetails.getDateOfBirth());
-            employee.setSalary(employeeDetails.getSalary());
-            employee.setDepartment(employeeDetails.getDepartment());
-            employee.setAddress(employeeDetails.getAddress());
-            employee.setRole(employeeDetails.getRole());
-            employee.setJoiningDate(employeeDetails.getJoiningDate());
-            employee.setYearlyBonusPercentage(employeeDetails.getYearlyBonusPercentage());
-            employee.setReportingManager(employeeDetails.getReportingManager());
-            return employeeRepository.save(employee);
+            employee.setFirstname(employeeDetails.getFirstname() != null ? employeeDetails.getFirstname() : employee.getFirstname());
+            employee.setLastname(employeeDetails.getLastname() != null ? employeeDetails.getLastname() : employee.getLastname());
+            employee.setDateOfBirth(employeeDetails.getDateOfBirth() != null ? employeeDetails.getDateOfBirth() : employee.getDateOfBirth());
+            employee.setSalary(employeeDetails.getSalary() != null ? employeeDetails.getSalary() : employee.getSalary());
+            if (employeeDetails.getDepartmentID() != null) {
+                // Validate department exists
+                Optional<Department> departmentOptional = departmentRepository.findById(employeeDetails.getDepartmentID());
+                if (!departmentOptional.isPresent()) {
+                    log.error("Department not found with ID: {}", employeeDetails.getDepartmentID());
+                    throw new EmployeeException("Department not found");
+                }
+                employee.setDepartment(departmentOptional.get());
+            }
+            employee.setAddress(employeeDetails.getAddress() != null ? employeeDetails.getAddress() : employee.getAddress());
+            employee.setRole(employeeDetails.getRole() != null ? employeeDetails.getRole() : employee.getRole());
+            employee.setJoiningDate(employeeDetails.getJoiningDate() != null ? employeeDetails.getJoiningDate() : employee.getJoiningDate());
+            employee.setYearlyBonusPercentage(employeeDetails.getYearlyBonusPercentage() != null ? employeeDetails.getYearlyBonusPercentage() : employee.getYearlyBonusPercentage());
+            if (employeeDetails.getReportingManagerId() != null) {
+                Optional<Employee> managerOptional = employeeRepository.findById(employeeDetails.getReportingManagerId());
+                if (!managerOptional.isPresent()) {
+                    log.error("Reporting manager not found with ID: {}", employeeDetails.getReportingManagerId());
+                    throw new EmployeeException("Reporting manager not found");
+                }
+                employee.setReportingManager(managerOptional.get());
+            } 
+            employeeRepository.save(employee);
+            return employee.toDto();
+            
+        } catch (EmployeeException e) {
+            log.error("Employee error: {}", e.getMessage());
+            throw e; // Let global exception handler handle this
         } catch (Exception e) {
             log.error("Error updating employee: {}", e.getMessage());
             throw new RuntimeException("Failed to update employee", e);
