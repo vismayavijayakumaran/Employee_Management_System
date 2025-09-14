@@ -4,8 +4,11 @@
 
 1. **Clone the repository**  
    ```
-   git clone <your-repo-url>
+   git clone https://github.com/vismayavijayakumaran/Employee_Management_System.git
    cd Employee_Management_System
+   git checkout develop 
+
+  
    ```
 
 2. **Configure the database**  
