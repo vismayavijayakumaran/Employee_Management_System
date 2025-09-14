@@ -12,9 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class EmployeeRequest {
 
-    private String firstname;
-
-    private String lastname;
+    private String name;
 
     private LocalDate dateOfBirth;
 

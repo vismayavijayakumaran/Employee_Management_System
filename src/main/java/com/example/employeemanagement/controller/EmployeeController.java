@@ -2,8 +2,10 @@ package com.example.employeemanagement.controller;
 
 import com.example.employeemanagement.DTO.EmployeeRequest;
 import com.example.employeemanagement.DTO.EmployeeResponse;
+import com.example.employeemanagement.DTO.UpdateDepartment;
 import com.example.employeemanagement.Entity.Employee;
 import com.example.employeemanagement.service.EmployeeService;
+import java.util.Map;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,10 +30,16 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<EmployeeResponse>> getAllEmployees(
+    public ResponseEntity<?> getAllEmployees(
+        @RequestParam(value = "lookup", required = false) Boolean lookup,
         @PageableDefault(page = 0, size = 20, sort = {"createdAt"}, direction = Direction.DESC) Pageable pageable) {
-        Page<EmployeeResponse> employees = employeeService.getAllEmployees(pageable);
-        return ResponseEntity.ok(employees);
+        if (Boolean.TRUE.equals(lookup)) {
+            // Return only id and name
+            return ResponseEntity.ok(employeeService.getEmployeeLookups(pageable));
+        } else {
+            Page<EmployeeResponse> employees = employeeService.getAllEmployees(pageable);
+            return ResponseEntity.ok(employees);
+        }
     }
 
     @PutMapping("/{id}")
@@ -40,9 +48,11 @@ public class EmployeeController {
         return ResponseEntity.ok(updatedEmployee);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEmployee(@PathVariable UUID id) {
-        employeeService.deleteEmployee(id);
-        return ResponseEntity.noContent().build();
+    @PatchMapping("/{id}/department")
+    public ResponseEntity<EmployeeResponse> updateEmployeeDepartment(
+            @PathVariable UUID id,
+            @RequestBody UpdateDepartment request) {
+        EmployeeResponse updatedEmployee = employeeService.updateEmployeeDepartment(id, request);
+        return ResponseEntity.ok(updatedEmployee);
     }
 }

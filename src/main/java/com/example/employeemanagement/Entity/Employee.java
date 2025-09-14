@@ -31,10 +31,9 @@ public class Employee {
     private UUID id;
 
     @NotBlank(message = "Name is required")
-    private String firstname;
+    private String name;
 
-    @NotBlank(message = "Name is required")
-    private String lastname;
+    private String email;
 
     @NotNull(message = "Date of birth is required")
     private LocalDate dateOfBirth;
@@ -67,7 +66,7 @@ public class Employee {
     public EmployeeResponse toDto() {
         EmployeeResponse dto = new EmployeeResponse();
         dto.setId(this.getId());
-        dto.setName(this.getFirstname().concat(getLastname()));
+        dto.setName(this.getName());
         dto.setDateOfBirth(this.getDateOfBirth());
         dto.setSalary(this.getSalary());
         dto.setAddress(this.getAddress());
@@ -79,7 +78,7 @@ public class Employee {
             dto.setDepartmenName(this.getDepartment().getName());
         }
         if (this.getReportingManager() != null) {
-            dto.setReportingManagerName(this.getReportingManager().getFirstname().concat(getLastname()));
+            dto.setReportingManagerName(this.getReportingManager().getName());
         }
         return dto;
     }

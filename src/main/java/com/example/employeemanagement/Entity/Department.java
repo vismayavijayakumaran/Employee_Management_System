@@ -1,5 +1,6 @@
 package com.example.employeemanagement.Entity;
 
+import com.example.employeemanagement.DTO.DepartmentResponse;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -33,4 +34,14 @@ public class Department {
     @JoinColumn(name = "head_id")
     private Employee departmentHead;
 
+    public DepartmentResponse toDto() {
+        DepartmentResponse dto = new DepartmentResponse();
+        dto.setId(this.id);
+        dto.setName(this.name);
+        dto.setCreatedAt(this.createdAt);
+        if (this.departmentHead != null) {
+            dto.setDepartmentHeadName(this.departmentHead.getName());
+        }
+        return dto;
+    }
 }

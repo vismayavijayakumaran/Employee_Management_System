@@ -2,6 +2,8 @@ package com.example.employeemanagement.service;
 
 import com.example.employeemanagement.DTO.EmployeeRequest;
 import com.example.employeemanagement.DTO.EmployeeResponse;
+import com.example.employeemanagement.DTO.UpdateDepartment;
+import com.example.employeemanagement.DTO.EmployeeLookupResponse;
 import com.example.employeemanagement.Entity.Department;
 import com.example.employeemanagement.Entity.Employee;
 import com.example.employeemanagement.exception.EmployeeException;
@@ -9,6 +11,8 @@ import com.example.employeemanagement.repository.DepartmentRepository;
 import com.example.employeemanagement.repository.EmployeeRepository;
 import java.util.UUID;
 import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,24 +30,25 @@ public class EmployeeService {
 
     public EmployeeResponse createEmployee(Employee employee) {
         try {
-            if (employee == null) {
-                log.error("Attempted to create a null employee");
-                throw new IllegalArgumentException("Employee object cannot be null");
+            // Check if email already exists
+            if (employee.getEmail() != null && employeeRepository.existsByEmail(employee.getEmail())) {
+            log.error("Email already exists: {}", employee.getEmail());
+            throw new EmployeeException("User already exists with this email");
             }
             // Check department
             if (employee.getDepartment() == null || employee.getDepartment().getId() == null ||
-                !departmentRepository.existsById(employee.getDepartment().getId())) {
-                log.error("Invalid or missing department for employee");
-                throw new EmployeeException("Department not found");
+            !departmentRepository.existsById(employee.getDepartment().getId())) {
+            log.error("Invalid or missing department for employee");
+            throw new EmployeeException("Department not found");
             }
             // Check reporting manager (if provided)
             if (employee.getReportingManager() != null && employee.getReportingManager().getId() != null) {
-                if (!employeeRepository.existsById(employee.getReportingManager().getId())) {
-                    log.error("Reporting manager not found with ID: {}", employee.getReportingManager().getId());
-                    throw new EmployeeException("Reporting manager not found");
-                }
+            if (!employeeRepository.existsById(employee.getReportingManager().getId())) {
+                log.error("Reporting manager not found with ID: {}", employee.getReportingManager().getId());
+                throw new EmployeeException("Reporting manager not found");
             }
-            log.info("Creating employee: {}", employee.getFirstname());
+            }
+            log.info("Creating employee: {}", employee.getName());
             Employee savedEmployee = employeeRepository.save(employee);
             return savedEmployee.toDto();
         } catch (Exception e) {
@@ -78,8 +83,7 @@ public class EmployeeService {
                         return new RuntimeException("Employee not found");
                     });
             log.info("Updating employee with ID: {}", id);
-            employee.setFirstname(employeeDetails.getFirstname() != null ? employeeDetails.getFirstname() : employee.getFirstname());
-            employee.setLastname(employeeDetails.getLastname() != null ? employeeDetails.getLastname() : employee.getLastname());
+            employee.setName(employeeDetails.getName() != null ? employeeDetails.getName() : employee.getName());
             employee.setDateOfBirth(employeeDetails.getDateOfBirth() != null ? employeeDetails.getDateOfBirth() : employee.getDateOfBirth());
             employee.setSalary(employeeDetails.getSalary() != null ? employeeDetails.getSalary() : employee.getSalary());
             if (employeeDetails.getDepartmentID() != null) {
@@ -115,24 +119,6 @@ public class EmployeeService {
         }
     }
 
-    public void deleteEmployee(UUID id) {
-        try {
-            if (id == null) {
-                log.error("Employee ID is null for deletion");
-                throw new IllegalArgumentException("Employee ID cannot be null");
-            }
-            if (!employeeRepository.existsById(id)) {
-                log.error("Employee not found with ID: {}", id);
-                throw new RuntimeException("Employee not found");
-            }
-            log.info("Deleting employee with ID: {}", id);
-            employeeRepository.deleteById(id);
-        } catch (Exception e) {
-            log.error("Error deleting employee: {}", e.getMessage());
-            throw new RuntimeException("Failed to delete employee", e);
-        }
-    }
-
     public Page<EmployeeResponse> getAllEmployees(Pageable pageable) {
         try {
             log.info("Fetching all employees with pagination: {}", pageable);
@@ -141,6 +127,40 @@ public class EmployeeService {
         } catch (Exception e) {
             log.error("Error fetching employees: {}", e.getMessage());
             throw new RuntimeException("Failed to fetch employees", e);
+        }
+    }
+
+    public EmployeeResponse updateEmployeeDepartment(UUID employeeId, UpdateDepartment request) {
+        try {
+            Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new EmployeeException("Employee not found"));
+            Department department = departmentRepository.findById(request.getDepartmentId())
+                .orElseThrow(() -> new EmployeeException("Department not found"));
+            employee.setDepartment(department);
+            Employee updatedEmployee = employeeRepository.save(employee);
+            return updatedEmployee.toDto();
+        } catch (EmployeeException e) {
+            log.error("EmployeeException: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error("Unexpected error while updating employee department: {}", e.getMessage());
+            throw new EmployeeException("Failed to update employee department: " + e.getMessage());
+        }
+    }
+
+    public Page<EmployeeLookupResponse> getEmployeeLookups(Pageable pageable) {
+        try {
+            log.info("Fetching employee lookup list (ID and Name only) with pagination: {}", pageable);
+            Page<Employee> employeePage = employeeRepository.findAll(pageable);
+            return employeePage.map(emp -> {
+                EmployeeLookupResponse dto = new EmployeeLookupResponse();
+                dto.setId(emp.getId());
+                dto.setName(emp.getName()); // or combine first/last name if needed
+                return dto;
+            });
+        } catch (Exception e) {
+            log.error("Error fetching employee lookup list: {}", e.getMessage());
+            throw new EmployeeException("Failed to fetch employee lookup list: " + e.getMessage());
         }
     }
 }

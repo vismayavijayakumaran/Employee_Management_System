@@ -13,5 +13,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    // You can add more handlers for other exceptions here
+    @ExceptionHandler(DepartmentServiceException.class)
+    public ResponseEntity<String> handleDepartmentServiceException(DepartmentServiceException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    
 }

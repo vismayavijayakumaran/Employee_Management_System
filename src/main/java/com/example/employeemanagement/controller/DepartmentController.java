@@ -1,5 +1,8 @@
 package com.example.employeemanagement.controller;
 
+import com.example.employeemanagement.DTO.DepartmentRequest;
+import com.example.employeemanagement.DTO.DepartmentResponse;
+import com.example.employeemanagement.DTO.DepartmentWithEmployeesResponse;
 import com.example.employeemanagement.Entity.Department;
 import com.example.employeemanagement.service.DepartmentService;
 import java.util.UUID;
@@ -20,22 +23,22 @@ public class DepartmentController {
     private DepartmentService departmentService;
 
     @PostMapping
-    public ResponseEntity<Department> createDepartment(@RequestBody Department department) {
-        Department createdDepartment = departmentService.createDepartment(department);
+    public ResponseEntity<DepartmentResponse> createDepartment(@RequestBody Department department) {
+        DepartmentResponse createdDepartment = departmentService.createDepartment(department);
         return new ResponseEntity<>(createdDepartment, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<Page<Department>> getAllDepartments(
+    public ResponseEntity<Page<DepartmentResponse>> getAllDepartments(
         @PageableDefault(page = 0, size = 20, sort = {"createdAt"}, direction = Direction.DESC) Pageable pageable
     ) {
-        Page<Department> departments = departmentService.getAllDepartments(pageable);
+        Page<DepartmentResponse> departments = departmentService.getAllDepartments(pageable);
         return ResponseEntity.ok(departments);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Department> updateDepartment(@PathVariable UUID id, @RequestBody Department department) {
-        Department updatedDepartment = departmentService.updateDepartment(id, department);
+    public ResponseEntity<DepartmentResponse> updateDepartment(@PathVariable UUID id, @RequestBody DepartmentRequest department) {
+        DepartmentResponse updatedDepartment = departmentService.updateDepartment(id, department);
         return ResponseEntity.ok(updatedDepartment);
     }
 
@@ -43,5 +46,18 @@ public class DepartmentController {
     public ResponseEntity<Void> deleteDepartment(@PathVariable UUID id) {
         departmentService.deleteDepartment(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getDepartmentById(
+            @PathVariable UUID id,
+            @RequestParam(value = "expand", required = false) String expand) {
+        if ("employee".equalsIgnoreCase(expand)) {
+            DepartmentWithEmployeesResponse response = departmentService.getDepartmentWithEmployees(id);
+            return ResponseEntity.ok(response);
+        } else {
+            DepartmentResponse response = departmentService.getDepartmentById(id);
+            return ResponseEntity.ok(response);
+        }
     }
 }

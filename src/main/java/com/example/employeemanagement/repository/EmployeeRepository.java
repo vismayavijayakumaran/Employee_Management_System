@@ -1,5 +1,6 @@
 package com.example.employeemanagement.repository;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,5 +9,10 @@ import com.example.employeemanagement.Entity.Employee;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, UUID> {
-    // Additional query methods can be defined here if needed
+
+    boolean existsByEmail(String email);
+
+    boolean existsByDepartmentId(UUID id);
+    
+    List<Employee> findByDepartmentId(UUID departmentId);
 }
